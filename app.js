@@ -1,3 +1,5 @@
+/* Models / Collections */
+
 var Activity = Backbone.Model.extend( );
 
 var Activities = Backbone.Collection.extend({
@@ -23,6 +25,8 @@ var Challenges = Backbone.Collection.extend({
     this.fetch({ reset: true });
   }
 });
+
+/* Views */
 
 // Abstract
 CollectionView = Backbone.View.extend({
@@ -104,4 +108,5 @@ function init() {
     el: $("#app")
   });
 }
+
 init();
