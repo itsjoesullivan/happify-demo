@@ -1,0 +1,16 @@
+body {
+  font-family: courier;
+}
+
+.activities {
+  display: none;
+}
+
+.activities.open {
+  display: block;
+}
+
+
+.activity.selected {
+  font-weight: bold;
+}
