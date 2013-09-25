@@ -1,5 +1,21 @@
-var Challenge = Backbone.Model.extend({
+var Activity = Backbone.Model.extend( );
+
+var Activities = Backbone.Collection.extend({
+  model: Activity
 });
+
+var Challenge = Backbone.Model.extend({
+  initialize: function(obj) {
+    this.set('activities',  new Activities());
+    _(obj.activities).each(function(activity) {
+      this.get('activities').add(activity);
+    }, this);
+    this.get('activities').on('selected', function() {
+      console.log('Activity selected! Let\'s go...');
+    });
+  }
+});
+
 var Challenges = Backbone.Collection.extend({
   model: Challenge,
   url: "http://happify-test-api.herokuapp.com/api/challenges",
@@ -8,6 +24,7 @@ var Challenges = Backbone.Collection.extend({
   }
 });
 
+// Abstract
 CollectionView = Backbone.View.extend({
   tagName: 'ul',
   initialize: function() {
@@ -22,13 +39,27 @@ CollectionView = Backbone.View.extend({
   render: function() {
     this.$el.empty();
     this.collection.each(this.renderOne, this);
+    return this;
   }
 });
 
 ActivityView = Backbone.View.extend({
   tagName: 'li',
   className: 'activity',
-  template: _.template("hi")
+  template: _.template("<%= name %>"),
+  events: {
+    "click": "select"
+  },
+  select: function() {
+    this.model.trigger("selected");
+
+    // Optimistic
+    this.$el.toggleClass("selected");
+  },
+  render: function() {
+    this.$el.html( this.template(this.model.toJSON() ) );
+    return this;
+  }
 });
 
 ActivitiesView = CollectionView.extend({
@@ -40,9 +71,21 @@ ActivitiesView = CollectionView.extend({
 ChallengeView = Backbone.View.extend({
   tagName: 'li',
   className: 'challenge',
-  template: _.template("hi"),
+  template: _.template("" + 
+    "<h1><%= name %></h1>" + 
+  ""),
+  events: {
+    "click h1": "toggle"
+  },
+  toggle: function() {
+    this.$el.find(".activities").toggleClass("open");
+  },
   render: function() {
-    console.log('asdf');
+    var activitiesView = new ActivitiesView({
+      collection: this.model.get('activities')
+    });
+    this.$el.html( this.template(this.model.toJSON() ) );
+    this.$el.append(activitiesView.render().el );
     return this;
   }
 });
